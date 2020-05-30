@@ -65,10 +65,6 @@ public class ButtonActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_button);
-        Intent intent = getIntent();
-        id = intent.getStringExtra("id");
-        token=intent.getStringExtra("token");
-        System.out.print("id----------"+id);
         initData();
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);

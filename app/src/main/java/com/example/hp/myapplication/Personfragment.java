@@ -55,6 +55,10 @@ public class Personfragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Selection selection = selectionList1.get(position);
 
+                if (selection.getName().equals("个人资料")) {
+                    Intent intent = new Intent(getActivity(), PersActivity.class);
+                    startActivity(intent);
+                }
                 if (selection.getName().equals("团队")) {
                     Intent intent = new Intent(getActivity(), TeamsListActivity.class);
                     startActivity(intent);
@@ -85,7 +89,7 @@ public class Personfragment extends Fragment {
     //初始化列表数据
     private void initSelections1() {
 
-        Selection account = new Selection("账号", R.drawable.account_icon);
+        Selection account = new Selection("个人资料", R.drawable.account_icon);
         selectionList1.add(account);
         Selection team = new Selection("团队", R.drawable.team_icon);
         selectionList1.add(team);

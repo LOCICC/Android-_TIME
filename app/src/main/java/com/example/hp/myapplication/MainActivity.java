@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this,
                         "开始注册", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, PersActivity.class);
+                Intent intent = new Intent(MainActivity.this, AppActivity.class);
                 startActivity(intent);
                 MainActivity.this.finish();
             }
@@ -330,9 +330,9 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
                          }
 
                          } );
-        Intent intent = new Intent(MainActivity.this, ButtonActivity.class);
-        startActivity(intent);
-        MainActivity.this.finish();
+//        Intent intent = new Intent(MainActivity.this, ButtonActivity.class);
+//        startActivity(intent);
+//        MainActivity.this.finish();
     }
 
     private boolean isEmailValid(String email) {

@@ -1,5 +1,5 @@
 package com.example.hp.myapplication;
-
+import com.example.hp.myapplication.alldata.Data1;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -24,15 +24,25 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-;
+;import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 public class LockActivity extends AppCompatActivity {
 
 
     private ProgressRing mProgressRing;
-    String ID;
-    String Token;
+    private String usertodoid;
     private int sum;
     private int all;
     private int mProgressSecond = 0;
@@ -40,29 +50,36 @@ public class LockActivity extends AppCompatActivity {
     private int minute=0;
     private final int MESSAGE_PROGRESS = 0;
 
-//    public void inform()
-//    {
-//        OkHttpClient client = new OkHttpClient();
-//        Request request = new Request.Builder()
-//                .get()
-//                .url("http://b84b9070.ngrok.io/userTodo/listByUserId")
-//                .addHeader("id",ID)
-//                .addHeader("token",Token)
-//                .build();
-//        client.newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                String err = e.getMessage().toString();
-//            }
-//            //请求成功执行的方法
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                String  rtn= response.body().string();
-//                System.out.print("lock数据---------"+rtn+"\n");
-//            }
-//
-//        } );
-//    }
+    public void inform ()throws JSONException
+    {
+        JSONObject param=new JSONObject();
+
+        param.put("userTodoId",usertodoid);
+        param.put("todoStatusId","0");
+        String json=param.toString();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .post(body )
+                .url(Data1.url+"/userTodo/updateState")
+                .addHeader("id",Data1.ID)
+                .addHeader("token",Data1.Token)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String err = e.getMessage().toString();
+            }
+            //请求成功执行的方法
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String  rtn= response.body().string();
+                System.out.print("lock数据---------"+rtn+"\n");
+            }
+
+        } );
+    }
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
 
@@ -72,9 +89,18 @@ public class LockActivity extends AppCompatActivity {
                     all--;
                     if (all < 0) {
                         // TODO 倒计时结束
-                    //    inform();;
-                        Intent intent = new Intent(LockActivity.this, MainActivity.class);
+                        try {
+                            inform();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Intent intent = new Intent(LockActivity.this, ButtonActivity.class);
                         startActivity(intent);
+                        try {
+                            inform();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         return false;
                     }
                     mProgressHour=all/3600;
@@ -106,15 +132,18 @@ public class LockActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock);
         all=getIntent().getIntExtra("timelong",5);
-        ID=getIntent().getStringExtra("id");
-        Token=getIntent().getStringExtra("token");
+        usertodoid=getIntent().getStringExtra("usertodoid");
         System.out.print(all);
         all=all*60;
         sum=all;
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
         intent.setData(Uri.parse("package:" + getPackageName()));
         startActivityForResult(intent, 100);
-
+        try {
+            inform();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         Button tClick = findViewById(R.id.button);
         tClick.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +152,7 @@ public class LockActivity extends AppCompatActivity {
                         "锁屏终止", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LockActivity.this, ButtonActivity.class);
                 startActivity(intent);
+                mHandler.removeCallbacksAndMessages(null);
                LockActivity.this.finish();
             }
         });

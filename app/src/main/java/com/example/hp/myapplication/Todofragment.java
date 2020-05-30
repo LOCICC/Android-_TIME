@@ -60,6 +60,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
     List<Integer>Time= new ArrayList<>();
     List<String>time=new ArrayList<String>();
     List<Integer>todoid= new ArrayList<>();
+    List<String>status=new ArrayList<>();
     //将数据封装成数据源
     List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
@@ -108,9 +109,12 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
                         title.add(value.getString("name"));
                         System.out.print("name======="+value.getString("name")+"\n");
                         Time.add(value.optInt("time"));
-                        time.add(value.getString("time"));
+                        int t=value.optInt("time");
+                        time.add(String.valueOf(t));
                         todoid.add(value.optInt("userTodoId"));
-                     //   status[i]=value.getString("status");
+                        JSONObject value1 =value.getJSONObject("todoStatus");
+                        status.add(value1.getString("todoStatusId"));
+                        System.out.println("todoid-------"+value1.getString("todoStatusId"));
                     }
                     flag=true;
                 } catch (JSONException e) {
@@ -120,14 +124,16 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
             }
 
         } );
+
     }
 
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View messageLayout=inflater.inflate(R.layout.todo,container,false);
-//        init();
-//        while(!flag){}
-        init1();
+        View messageLayout=inflater.inflate(R.layout.todo,container,false);
+        flag=false;
+        init();
+        while(!flag){}
+     //   init1();
         listview = messageLayout.findViewById(R.id.listView);
         toolbar = messageLayout.findViewById(R.id.toolbar);
         adapter = new MyAdapter(list,getContext());
@@ -139,6 +145,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
             map.put("title", title.get(i));
             map.put("time", time.get(i)+"分钟");
             map.put("begin", "开始");
+            map.put("status",status.get(i));
             list.add(map);
         }
         adapter.notifyDataSetChanged();
@@ -244,6 +251,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
             Toast.makeText(getActivity(), "开始计时" , Toast.LENGTH_SHORT).show();
             String tim=list.get(position).get("time").toString();
             int time=0;
+            String todo=list.get(position).get("status").toString();
             for(int i=0;i<tim.length();i++) {
                 char o=tim.charAt(i);
                 if(o>='0'&&o<='9') {
@@ -255,6 +263,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
             System.out.print("============"+time);
             final Intent intent = new Intent(getActivity(), LockActivity.class);
             intent.putExtra("timelong", time);
+            intent.putExtra("usertodoid",todo);
             startActivity(intent);
             getActivity().finish();
         }
@@ -292,12 +301,22 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
         } );
     }
 
-    public void Create (final String tim, String name)throws JSONException
+    public void Create (final String tim, final String name)throws JSONException
     {
+        int t=0;
+        for(int i=0;i<tim.length();i++) {
+            char o=tim.charAt(i);
+            if(o>='0'&&o<='9') {
+                t=t*10;
+                t=t+(o-'0');
+            }
+            else break;;
+        }
+        Time.add(t);
         JSONObject param=new JSONObject();
 
-        param.put("userTodoSetId",0);
-        param.put("time",tim);
+        param.put("userTodoSetId","-1");
+        param.put("time",t);
         param.put("name",name);
         String json=param.toString();
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -309,6 +328,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
                 .addHeader("token",Data1.Token)
                 .post(body )
                 .build();
+        final int finalT = t;
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -320,17 +340,16 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
                 String  rtn= response.body().string();
                 System.out.print("delete============"+rtn+"\n");
                 try {
+                    status.add("1");
+                    title.add(name);
+                    time.add(tim);
                     JSONArray jsonArray = new JSONArray(rtn);
                     int size=jsonArray.length();
                     for (int i = 0; i < size; i++) {
                         JSONObject value = jsonArray.getJSONObject(i);
                         //获取到title值
                         System.out.print("name======="+value.getString("name")+"\n");
-                        title.add(value.getString("name"));
                         todoid.add(value.optInt("userTodoId"));
-                        time.add(value.getString("time"));
-                        Time.add(value.optInt("time"));
-                        //   status[i]=value.getString("status");
                     }
                     flag=true;
                 } catch (JSONException e) {

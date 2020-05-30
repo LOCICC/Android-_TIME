@@ -43,8 +43,12 @@ public class MyAdapter extends BaseAdapter implements OnClickListener {
         ViewHolder mHolder;
         if (convertView == null) {
             mHolder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item,
+            if(list.get(position).get("status").toString().equals("1"))convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item1,
                     null);
+            else {
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item,
+                        null);
+            }
         } else {
             convertView = convertView;
             mHolder = (ViewHolder) convertView.getTag();  //重新获得ViewHolder
