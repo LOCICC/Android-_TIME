@@ -4,7 +4,7 @@
     <!--定义矩形四个角的弧度-->
     <corners android:radius="16dp" />
     <!--填充颜色-->
-    <solid android:color="#00cccc" />
+    <solid android:color="#6190f2" />
     <!--为矩形绘制边框-->
 </shape>
 

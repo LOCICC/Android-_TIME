@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.Mac;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -47,9 +51,12 @@ import okhttp3.Response;
 
 public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclickListener,
         OnItemLongClickListener {
-
+    Message message = Message.obtain();
+    private Todofragment m = null;
     private popWinShare popwindows;
     private Toolbar toolbar;
+    View messageLayout;
+    LoadProgressDialog loadProgressDialog;
     MyAdapter adapter;
     ListView listview;
     boolean flag=false;
@@ -60,27 +67,32 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
     List<Integer>Time= new ArrayList<>();
     List<String>time=new ArrayList<String>();
     List<Integer>todoid= new ArrayList<>();
-    List<String>status=new ArrayList<>();
+    List<Integer>status=new ArrayList<>();
     //将数据封装成数据源
     List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
-    static Todofragment newInstance(String id,String token){
-        Todofragment newFragment=new Todofragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("ID", id);
-        bundle.putString("Token", token);
-        newFragment.setArguments(bundle);
-        return newFragment;
-    }
     public void init1()
     {
         title.add("背单词");
         title.add("做数学");
         title.add("画画");
+        status.add(1);
+        status.add(1);
+        status.add(1);
         time.add("40");
         time.add("50");
         time.add("2");
+        for(int i=0;i<title.size();i++){
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("title", title.get(i));
+            map.put("time", time.get(i)+"分钟");
+            map.put("begin", "开始");
+            map.put("status",status.get(i));
+            list.add(map);
+        }
     }
+
+
     public void init()
     {
         OkHttpClient client = new OkHttpClient();
@@ -113,10 +125,25 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
                         time.add(String.valueOf(t));
                         todoid.add(value.optInt("userTodoId"));
                         JSONObject value1 =value.getJSONObject("todoStatus");
-                        status.add(value1.getString("todoStatusId"));
-                        System.out.println("todoid-------"+value1.getString("todoStatusId"));
+                        status.add(value1.optInt("todoStatusId"));
+                        System.out.println("todostatusid-------"+value1.optInt("todoStatusId"));
                     }
                     flag=true;
+                    loadProgressDialog.dismiss();
+
+                    for(int i=0;i<title.size();i++){
+                        Map<String, Object> map = new HashMap<String, Object>();
+                        map.put("title", title.get(i));
+                        map.put("time", time.get(i)+"分钟");
+                        map.put("begin", "开始");
+                        map.put("status",status.get(i));
+                        map.put("id",todoid.get(i));
+                        list.add(map);
+                    }
+
+                    message.what = 0x11;
+                    handler.sendMessage(message);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -127,31 +154,37 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
 
     }
 
+    private Handler handler= new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 0x11) {
+                //更新ui
+                adapter.notifyDataSetChanged();
+            }
+        }
+    };
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View messageLayout=inflater.inflate(R.layout.todo,container,false);
+        messageLayout=inflater.inflate(R.layout.todo,container,false);
         flag=false;
-        init();
-        while(!flag){}
-     //   init1();
+        m=this;
+        loadProgressDialog=new LoadProgressDialog(getActivity(),"加载中……");
+        loadProgressDialog.show();
+        loadProgressDialog.setMessage("加载数据中……");
         listview = messageLayout.findViewById(R.id.listView);
         toolbar = messageLayout.findViewById(R.id.toolbar);
         adapter = new MyAdapter(list,getContext());
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
         listview.setAdapter(adapter);
-        for(int i=0;i<title.size();i++){
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("title", title.get(i));
-            map.put("time", time.get(i)+"分钟");
-            map.put("begin", "开始");
-            map.put("status",status.get(i));
-            list.add(map);
-        }
-        adapter.notifyDataSetChanged();
-        adapter.setOnInnerItemOnClickListener(this);
-        listview.setOnItemLongClickListener(this);
+        init();
+//        while(!flag);
+//        init1();
 
+        adapter.notifyDataSetChanged();
+        adapter.setOnInnerItemOnClickListener(m);
+        listview.setOnItemLongClickListener(m);
         return  messageLayout;
     }
     @Override
@@ -251,7 +284,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
             Toast.makeText(getActivity(), "开始计时" , Toast.LENGTH_SHORT).show();
             String tim=list.get(position).get("time").toString();
             int time=0;
-            String todo=list.get(position).get("status").toString();
+            String todo=list.get(position).get("id").toString();
             for(int i=0;i<tim.length();i++) {
                 char o=tim.charAt(i);
                 if(o>='0'&&o<='9') {
@@ -315,7 +348,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
         Time.add(t);
         JSONObject param=new JSONObject();
 
-        param.put("userTodoSetId","-1");
+        param.put("userTodoSetId","1");
         param.put("time",t);
         param.put("name",name);
         String json=param.toString();
@@ -338,9 +371,9 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String  rtn= response.body().string();
-                System.out.print("delete============"+rtn+"\n");
+                System.out.print("create============"+rtn+"\n");
                 try {
-                    status.add("1");
+                    status.add(1);
                     title.add(name);
                     time.add(tim);
                     JSONArray jsonArray = new JSONArray(rtn);
@@ -351,7 +384,6 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
                         System.out.print("name======="+value.getString("name")+"\n");
                         todoid.add(value.optInt("userTodoId"));
                     }
-                    flag=true;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

@@ -50,12 +50,12 @@ public class LockActivity extends AppCompatActivity {
     private int minute=0;
     private final int MESSAGE_PROGRESS = 0;
 
-    public void inform ()throws JSONException
+    public void inform (int s)throws JSONException
     {
         JSONObject param=new JSONObject();
-
+        System.out.println("usertodoid==============="+usertodoid+"\n");
         param.put("userTodoId",usertodoid);
-        param.put("todoStatusId","0");
+        param.put("todoStatusId",s);
         String json=param.toString();
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
@@ -90,17 +90,12 @@ public class LockActivity extends AppCompatActivity {
                     if (all < 0) {
                         // TODO 倒计时结束
                         try {
-                            inform();
+                            inform(2);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         Intent intent = new Intent(LockActivity.this, ButtonActivity.class);
                         startActivity(intent);
-                        try {
-                            inform();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                         return false;
                     }
                     mProgressHour=all/3600;
@@ -139,15 +134,16 @@ public class LockActivity extends AppCompatActivity {
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
         intent.setData(Uri.parse("package:" + getPackageName()));
         startActivityForResult(intent, 100);
-        try {
-            inform();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
         Button tClick = findViewById(R.id.button);
         tClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                try {
+                    inform(3);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 Toast.makeText(LockActivity.this,
                         "锁屏终止", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LockActivity.this, ButtonActivity.class);

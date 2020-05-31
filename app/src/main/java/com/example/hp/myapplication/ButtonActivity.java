@@ -42,7 +42,7 @@ public class ButtonActivity extends AppCompatActivity {
     };
     public void initData() {
         mFragments = new ArrayList<>();
-        mFragments.add(Todofragment.newInstance(id,token));
+        mFragments.add(new Todofragment());
         mFragments.add(new Todosfragment());
         mFragments.add(Timefragment.newInstance(id,token));
         mFragments.add(new Personfragment());

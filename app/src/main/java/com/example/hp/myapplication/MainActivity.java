@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
     private View mLoginFormView;
     private JSONObject param;
     private AlertDialog alertDialog1;
-
+    private TextView textView3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,12 +94,23 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this,
                         "开始注册", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, AppActivity.class);
+                Intent intent = new Intent(MainActivity.this, PersActivity.class);
                 startActivity(intent);
                 MainActivity.this.finish();
             }
         });
 
+        textView3=findViewById(R.id.textView3);
+        textView3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this,
+                        "下一步", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, ForgetActivity.class);
+                startActivity(intent);
+                MainActivity.this.finish();
+            }
+        });
 
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
