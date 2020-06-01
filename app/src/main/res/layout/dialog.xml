@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="320dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="50dp"
+        android:text=" " />
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="320dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:text="旧密码" />
+
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="320dp"
+        android:textSize="18dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        >
+
+    </EditText>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="320dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:text="输入新密码" />
+
+    <EditText
+        android:id="@+id/editTextNum"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="320dp"
+        android:textSize="18dp"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="320dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:text="重复输入新密码" />
+
+    <EditText
+        android:id="@+id/editTextNum1"
+        android:layout_width="320dp"
+        android:textSize="18dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

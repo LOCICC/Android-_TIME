@@ -38,8 +38,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -87,6 +90,11 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // Set up the login form.
+        SimpleDateFormat dff = new SimpleDateFormat("yyyy-MM-dd");
+        dff.setTimeZone(TimeZone.getTimeZone("GMT+08"));
+        String ee = dff.format(new Date());
+        System.out.println("date----------"+ee+"\n");
+
 
         TextView tClick = findViewById(R.id.textView1);
         tClick.setOnClickListener(new View.OnClickListener() {
@@ -94,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this,
                         "开始注册", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this, PersActivity.class);
+                Intent intent = new Intent(MainActivity.this, AppActivity.class);
                 startActivity(intent);
                 MainActivity.this.finish();
             }
@@ -334,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<C
 
                              final String rtn = response.body().string();
                              Log.d("Json数据",rtn);
-                             //获取返回码
+//                             获取返回码
                              Intent intent = new Intent(MainActivity.this, ButtonActivity.class);
                              startActivity(intent);
                              MainActivity.this.finish();

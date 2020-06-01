@@ -33,7 +33,7 @@
             android:text="" />
 
         <LinearLayout
-            android:layout_width="300dp"
+            android:layout_width="350dp"
             android:layout_height="41dp"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
@@ -65,7 +65,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="300dp"
+            android:layout_width="350dp"
             android:layout_height="41dp"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
@@ -91,13 +91,12 @@
                 android:onClick="r1"
                 android:focusableInTouchMode="false"
                 android:layout_width="match_parent"
-                android:src="@drawable/edit"
                 android:layout_height="30dp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="300dp"
+            android:layout_width="350dp"
             android:layout_height="41dp"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
@@ -106,7 +105,7 @@
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:gravity="center"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:textSize="20dp"
                 android:layout_height="40dp"
                 android:text="邮箱： " />
@@ -117,18 +116,10 @@
                 android:textSize="20dp"
                 android:layout_height="40dp"
                 android:text="1322" />
-            <ImageView
-                android:id="@+id/image13"
-                android:layout_weight="1"
-                android:onClick="r1"
-                android:focusableInTouchMode="false"
-                android:layout_width="match_parent"
-                android:src="@drawable/edit"
-                android:layout_height="30dp" />
 
         </LinearLayout>
         <LinearLayout
-            android:layout_width="300dp"
+            android:layout_width="350dp"
             android:layout_height="41dp"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
@@ -159,5 +150,10 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/buttonw"
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

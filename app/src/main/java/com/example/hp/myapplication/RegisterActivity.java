@@ -31,6 +31,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hp.myapplication.alldata.Data1;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,10 +80,14 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
     private EditText mNickname;
     private EditText mSex;
     private EditText mtel;
+    private EditText myz;
+    private String se;
     private View mProgressView;
     private View mLoginFormView;
     private AlertDialog alertDialog1;
-
+    private Button button;
+    private String email;
+    private String yz;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +99,8 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         mNickname=findViewById(R.id.nickname);
         mSex=findViewById(R.id.sex);
         mtel=findViewById(R.id.tel);
-
+        button=findViewById(R.id.button11);
+        myz=findViewById(R.id.YZ);
         populateAutoComplete();
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -108,6 +115,13 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
                     return true;
                 }
                 return false;
+            }
+        });
+
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                YZ();
             }
         });
 
@@ -128,7 +142,60 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 
 
     }
+    public void YZ(){
 
+            boolean cancel = false;
+            View focusView = null;
+            email=mEmailView.getText().toString();
+            System.out.println("================"+email);
+
+            if(email==null)
+            {
+                mEmailView.setError(getString(R.string.error_invalid_email));
+                focusView = mEmailView;
+                focusView.requestFocus();
+                return;
+            }
+            if (!isEmailValid(email)) {
+                mEmailView.setError(getString(R.string.error_invalid_email));
+                focusView = mEmailView;
+                cancel = true;
+            }
+            if(cancel){
+                focusView.requestFocus();
+                return;
+            }
+        JSONObject param=new JSONObject();
+        try {
+            param.put("email",email);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String json=param.toString();
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(JSON, json);
+        String uu=Data1.url+"/user/sendVerification?email="+email;
+        Request request = new Request.Builder()
+                .url(uu)
+                .get()
+                .build();
+        System.out.print("sendVerification\n");
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String err = e.getMessage().toString();
+            }
+            //请求成功执行的方法
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String  rtn= response.body().string();
+
+                System.out.println("==========="+rtn);
+            }
+        } );
+    }
     public void showSingleAlertDialog(View view){
         final String[] items = {"男", "女"};
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
@@ -138,8 +205,14 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             public void onClick(DialogInterface dialogInterface, int i) {
                 Toast.makeText(RegisterActivity.this, items[i], Toast.LENGTH_SHORT).show();
                 TextView t=findViewById(R.id.sex);
-                if(i==0)t.setText("男");
-                else t.setText("女");
+                if(i==0){
+                    t.setText("男");
+                        se="1";
+                }
+                else {
+                    t.setText("女");
+                    se="2";
+                }
             }
         });
 
@@ -225,10 +298,12 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         mNickname.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
         String password2 = mPasswordView2.getText().toString();
-
+        String tel = mtel.getText().toString();
+        String name=mNickname.getText().toString();
+        yz=myz.getText().toString();
         boolean cancel = false;
         View focusView = null;
 
@@ -271,12 +346,15 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 
 
         JSONObject param=new JSONObject();
-
-        param.put("userName","HAHA");
-        param.put("password","123456");
-        param.put("sex","1");
-        param.put("tel","132232");
-        param.put("email","1150206533@qq.com");
+        se="1";
+        if(mSex.getText().toString().equals("男"))se="1";
+        else se="2";
+        param.put("userName",name);
+        param.put("password",password);
+        param.put("sex",se);
+        param.put("tel",tel);
+        param.put("email",email);
+        param.put("verification",yz);
         String json=param.toString();
 
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -285,7 +363,7 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 
         //2.创建Request对象，设置一个url地址（百度地址）,设置请求方式。
         Request request = new Request.Builder()
-                .url("http://84341758.ngrok.io/user/sign")
+                .url(Data1.url+"/user/sign")
                 .post(body )
                 .build();
         //3.创建一个call对象,参数就是Request请求对象
@@ -296,33 +374,21 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             @Override
             public void onFailure(Call call, IOException e) {
                 String err = e.getMessage().toString();
+                System.out.print(err);
             }
             //请求成功执行的方法
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String rtn = response.body().string();
-                //获取返回码
-                try {
-                    JSONArray jsonArray=new JSONArray(rtn);
-                    for(int i=0;i<jsonArray.length();i++)
-                    {
-                        JSONObject jsonObject=jsonArray.getJSONObject(i);
-                        String id=jsonObject.getString("id");
-                        Toast.makeText(RegisterActivity.this,
-                                id, Toast.LENGTH_SHORT).show();
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                System.out.print("=========="+rtn);
 
             }
 
         } );
         Toast.makeText(RegisterActivity.this, "注册完毕！", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-        startActivity(intent);
-        RegisterActivity.this.finish();
+//        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+//        startActivity(intent);
+//        RegisterActivity.this.finish();
 
     }
 

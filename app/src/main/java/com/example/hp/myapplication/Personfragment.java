@@ -8,12 +8,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.hp.myapplication.adapter.SelectionAdapter;
+import com.example.hp.myapplication.alldata.Data1;
 import com.example.hp.myapplication.entity.Selection;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class Personfragment extends Fragment {
     private List<Selection> selectionList1 = new ArrayList<>();
@@ -83,7 +99,48 @@ public class Personfragment extends Fragment {
                 }
             }
         });
+
+        TextView textView= messageLayout.findViewById(R.id.sign);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getActivity(),
+                        "退出登录", Toast.LENGTH_SHORT).show();
+                try {
+                    quit();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+        });
         return  messageLayout;
+    }
+    public void quit()throws JSONException
+    {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .get()
+                .url(Data1.url+"/user/quit")
+                .addHeader("id",Data1.ID)
+                .addHeader("token",Data1.Token)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String err = e.getMessage().toString();
+            }
+            //请求成功执行的方法
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String  rtn= response.body().string();
+                System.out.print("退出---------"+rtn+"\n");
+
+            }
+
+        } );
     }
 
     //初始化列表数据
@@ -93,6 +150,8 @@ public class Personfragment extends Fragment {
         selectionList1.add(account);
         Selection team = new Selection("团队", R.drawable.team_icon);
         selectionList1.add(team);
+        Selection pet = new Selection("宠物", R.drawable.pet);
+        selectionList1.add(pet);
     }
     private void initSelections2() {
 

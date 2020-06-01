@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -47,7 +49,7 @@ import okhttp3.Response;
 
 public class Todosfragment extends Fragment implements daibanjiAdapter.InnerItemOnclickListener,
         OnItemLongClickListener {
-
+    Message message = Message.obtain();
     daibanjiAdapter adapter;
     ListView listview;
     private Toolbar toolbar;
@@ -72,18 +74,12 @@ public class Todosfragment extends Fragment implements daibanjiAdapter.InnerItem
         toolbar = (Toolbar)messageLayout.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
-        init1();
+        init();
     //    while(!flag);
         listview = (ListView) messageLayout.findViewById(R.id.listView);
         adapter = new daibanjiAdapter(list, getContext());
         listview.setAdapter(adapter);
-        for(int i=0;i<title.size();i++){
-            Map<String,Object> map=new HashMap<String, Object>();
-            map.put("title",title.get(i));
-            map.put("show",R.drawable.show);
-            list.add(map);
-        }
-        adapter.notifyDataSetChanged();
+
         adapter.setOnInnerItemOnClickListener(this);
         listview.setOnItemLongClickListener(this);
         //while(sizes==0){}
@@ -126,7 +122,15 @@ public class Todosfragment extends Fragment implements daibanjiAdapter.InnerItem
                         title.add(value.getString("name"));
                         todosetid.add(value.optInt("userTodoSetId"));
                     }
-                    flag=true;
+                    for(int i=0;i<title.size();i++){
+                        Map<String,Object> map=new HashMap<String, Object>();
+                        map.put("title",title.get(i));
+                        map.put("show",R.drawable.show);
+                        list.add(map);
+                    }
+
+                    message.what = 0x11;
+                    handler.sendMessage(message);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -137,8 +141,20 @@ public class Todosfragment extends Fragment implements daibanjiAdapter.InnerItem
 
     }
 
+
+    private Handler handler= new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 0x11) {
+                //更新ui
+                adapter.notifyDataSetChanged();
+            }
+        }
+    };
     public void Create (String name)throws JSONException
     {
+        title.add(name);
         JSONObject param=new JSONObject();
         param.put("name",name);
         String json=param.toString();
@@ -161,22 +177,16 @@ public class Todosfragment extends Fragment implements daibanjiAdapter.InnerItem
             public void onResponse(Call call, Response response) throws IOException {
                 String  rtn= response.body().string();
                 System.out.print("create============"+rtn+"\n");
+
+                JSONObject value = null;
                 try {
-                    JSONArray jsonArray = new JSONArray(rtn);
-                    int size=jsonArray.length();
-                    for (int i = 0; i < size; i++) {
-                        JSONObject value = jsonArray.getJSONObject(i);
-                        //获取到title值
-                        title.add(value.getString("name"));
-                        System.out.print("name======="+value.getString("name")+"\n");
-                        title.add(value.getString("time"));
-                        todosetid.add(value.optInt("userTodoId"));
-                        //   status[i]=value.getString("status");
-                    }
-                    flag=true;
+                    value = new JSONObject(rtn);
+                    System.out.print("id======="+value.getString("userTodoSetId")+"\n");
+                    todosetid.add(value.optInt("userTodoSetId"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
             }
 
         } );
@@ -244,14 +254,13 @@ public class Todosfragment extends Fragment implements daibanjiAdapter.InnerItem
                     Map<String,Object> map=new HashMap<String, Object>();
                     map.put("title",str);
                     map.put("show",R.drawable.show);
-                    title.add(str);
+
                     list.add(map);
-                    todosetid.add(0);
-//                    try {
-//                        Create(str);
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
+                    try {
+                        Create(str);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     Toast.makeText(getActivity() , "添加待办集成功！" ,Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
@@ -294,6 +303,7 @@ public class Todosfragment extends Fragment implements daibanjiAdapter.InnerItem
                 Intent intent = new Intent();
                 intent.setClass(getActivity(),showActivity.class);
                 intent.putExtra("Message",list.get(position).get("title").toString() );
+                intent.putExtra("todosetid",todosetid.get(position));
                 startActivity(intent);
                 break;
             default:
@@ -325,13 +335,13 @@ public class Todosfragment extends Fragment implements daibanjiAdapter.InnerItem
             public void onClick(DialogInterface arg0, int arg1) {
                 // TODO Auto-generated method stub
                 list.remove(itemNum);
-//                try {
-//                    Delete(itemNum);
-//                    title.remove(itemNum);
-//                    todosetid.remove(itemNum);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    Delete(itemNum);
+                    title.remove(itemNum);
+                    todosetid.remove(itemNum);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 Toast.makeText(getActivity(), "删除待办集成功！", Toast.LENGTH_SHORT).show();
                 adapter.notifyDataSetChanged();
             }

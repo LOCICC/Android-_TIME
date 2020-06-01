@@ -56,9 +56,10 @@ public class ForgetActivity extends AppCompatActivity {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
         RequestBody body = RequestBody.create(JSON, json);
+        String uu=Data1.url+"/user/findPassword?email="+email;
         Request request = new Request.Builder()
-                .url(Data1.url+"/user/findPassword")
-                .post(body)
+                .url(uu)
+                .get()
                 .build();
         System.out.print("updateUserNameInter\n");
         client.newCall(request).enqueue(new Callback() {

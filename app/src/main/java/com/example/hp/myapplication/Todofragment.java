@@ -126,7 +126,6 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
                         todoid.add(value.optInt("userTodoId"));
                         JSONObject value1 =value.getJSONObject("todoStatus");
                         status.add(value1.optInt("todoStatusId"));
-                        System.out.println("todostatusid-------"+value1.optInt("todoStatusId"));
                     }
                     flag=true;
                     loadProgressDialog.dismiss();
@@ -137,6 +136,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
                         map.put("time", time.get(i)+"分钟");
                         map.put("begin", "开始");
                         map.put("status",status.get(i));
+                        System.out.println("!!!!!!!!!"+title.get(i)+"!!!!!!!!"+status.get(i)+"\n");
                         map.put("id",todoid.get(i));
                         list.add(map);
                     }
@@ -227,6 +227,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
                     map.put("title", name);
                     map.put("time", time+"分钟");
                     map.put("begin", "开始");
+                    map.put("status","1");
                     list.add(map);
                     try {
                         Create(time,name);
@@ -308,6 +309,13 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
         JSONObject param=new JSONObject();
 
         param.put("userTodoId",todoid.get(itemNum));
+
+        title.remove(itemNum);
+        Time.remove(itemNum);
+        time.remove(itemNum);
+        todoid.remove(itemNum);
+        status.remove(itemNum);
+
         String json=param.toString();
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
@@ -372,21 +380,18 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
             public void onResponse(Call call, Response response) throws IOException {
                 String  rtn= response.body().string();
                 System.out.print("create============"+rtn+"\n");
-                try {
                     status.add(1);
                     title.add(name);
                     time.add(tim);
-                    JSONArray jsonArray = new JSONArray(rtn);
-                    int size=jsonArray.length();
-                    for (int i = 0; i < size; i++) {
-                        JSONObject value = jsonArray.getJSONObject(i);
-                        //获取到title值
-                        System.out.print("name======="+value.getString("name")+"\n");
-                        todoid.add(value.optInt("userTodoId"));
-                    }
+                JSONObject value= null;
+                try {
+                    value = new JSONObject(rtn);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                todoid.add(value.optInt("userTodoId"));
+
+
             }
 
         } );
@@ -415,15 +420,11 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
             public void onClick(DialogInterface arg0, int arg1) {
                 // TODO Auto-generated method stub
                 list.remove(itemNum);
-//                title.remove(itemNum);
-//                Time.remove(itemNum);
-//                time.remove(itemNum);
-//                todoid.remove(itemNum);
-//                try {
-//                    Delete(itemNum);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    Delete(itemNum);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 Toast.makeText(getActivity(), "删除待办成功！", Toast.LENGTH_SHORT).show();
                 adapter.notifyDataSetChanged();
             }

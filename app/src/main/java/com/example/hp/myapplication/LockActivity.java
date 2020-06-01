@@ -43,13 +43,14 @@ public class LockActivity extends AppCompatActivity {
 
     private ProgressRing mProgressRing;
     private String usertodoid;
-    private int sum;
-    private int all;
+    private static int sum;
+    private static int all;
     private int mProgressSecond = 0;
     private int mProgressHour=0;
     private int minute=0;
     private final int MESSAGE_PROGRESS = 0;
-
+    private static boolean flag=true;
+    private static boolean f=false;
     public void inform (int s)throws JSONException
     {
         JSONObject param=new JSONObject();
@@ -91,6 +92,7 @@ public class LockActivity extends AppCompatActivity {
                         // TODO 倒计时结束
                         try {
                             inform(2);
+                            flag=true;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -110,7 +112,27 @@ public class LockActivity extends AppCompatActivity {
                     else if(minute<10)mProgressRing.setText(mProgressHour+":"+minute+":0"+mProgressSecond);
                     else mProgressRing.setText(mProgressHour+":"+minute+":"+mProgressSecond);
                     mProgressRing.setProgress((float) (all * 100.0 / sum));
+                    if(f)mHandler.removeCallbacksAndMessages(null);
                     mHandler.sendEmptyMessageDelayed(MESSAGE_PROGRESS, 1000);
+                    break;
+                case 1:
+                    if (all < 0) {
+                        return false;
+                    }
+                    mProgressHour=all/3600;
+                    minute=(all%3600)/60;
+                    mProgressSecond=all%60;
+                    if(mProgressHour<10&&minute<10&&mProgressSecond<10) mProgressRing.setText("0"+mProgressHour+":0"+minute+":0"+mProgressSecond);
+                    else if(mProgressHour>10&&minute<10&&mProgressSecond<10)mProgressRing.setText(mProgressHour+":0"+minute+":0"+mProgressSecond);
+                    else if(mProgressHour<10&&minute>=10&&mProgressSecond<10) mProgressRing.setText("0"+mProgressHour+":"+minute+":0"+mProgressSecond);
+                    else if(mProgressHour<10&&minute>=10) mProgressRing.setText("0"+mProgressHour+":"+minute+":"+mProgressSecond);
+                    else if(mProgressHour<10&&minute<10)mProgressRing.setText("0"+mProgressHour+":0"+minute+":"+mProgressSecond);
+                    else if(mProgressHour>10&&minute<10)mProgressRing.setText(mProgressHour+":0"+minute+":"+mProgressSecond);
+                    else if(minute<10)mProgressRing.setText(mProgressHour+":"+minute+":0"+mProgressSecond);
+                    else mProgressRing.setText(mProgressHour+":"+minute+":"+mProgressSecond);
+                    mProgressRing.setProgress((float) (all * 100.0 / sum));
+                    if(f)mHandler.removeCallbacksAndMessages(null);
+                    mHandler.sendEmptyMessageDelayed(1, 1000);
                     break;
                 default:
                     break;
@@ -126,39 +148,68 @@ public class LockActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock);
-        all=getIntent().getIntExtra("timelong",5);
-        usertodoid=getIntent().getStringExtra("usertodoid");
-        System.out.print(all);
-        all=all*60;
-        sum=all;
+        if(flag) {
+            f=false;
+                all = getIntent().getIntExtra("timelong", 5);
+                usertodoid = getIntent().getStringExtra("usertodoid");
+                System.out.print(all);
+                all = all * 60;
+                sum = all;
+        }
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
         intent.setData(Uri.parse("package:" + getPackageName()));
         startActivityForResult(intent, 100);
+
 
         Button tClick = findViewById(R.id.button);
         tClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                try {
+//                    inform(3);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+                Toast.makeText(LockActivity.this,
+                        "锁屏终止", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(LockActivity.this, AppActivity.class);
+                startActivity(intent);
+               LockActivity.this.finish();
+            }
+        });
+
+        Button tClick1 = findViewById(R.id.button4);
+        tClick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 try {
                     inform(3);
+                    f=true;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 Toast.makeText(LockActivity.this,
                         "锁屏终止", Toast.LENGTH_SHORT).show();
+                mHandler.removeCallbacksAndMessages(null);
                 Intent intent = new Intent(LockActivity.this, ButtonActivity.class);
                 startActivity(intent);
-                mHandler.removeCallbacksAndMessages(null);
-               LockActivity.this.finish();
+                LockActivity.this.finish();
             }
         });
+
         this.getWindow().setFlags(0x80000000, 0x80000000);
         prohibitDropDown();
         hideNavigationBar();
         ListenRecentAndHome();
-    //ring
         mProgressRing = findViewById(R.id.pr_progress);
-        mHandler.sendEmptyMessage(MESSAGE_PROGRESS);
+        if(flag){
+            mHandler.sendEmptyMessage(MESSAGE_PROGRESS);
+            flag = false;
+        }
+        else{
+            mHandler.sendEmptyMessage(1);
+        }
+
     }
 
 

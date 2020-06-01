@@ -1,5 +1,7 @@
 package com.example.hp.myapplication;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.Toolbar;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -44,28 +46,35 @@ public class showActivity extends AppCompatActivity implements MyAdapter.InnerIt
     private Toolbar toolbar;
     MyAdapter adapter;
     ListView listview;
-
+    Message message = Message.obtain();
     //需要数据：待办集的待办名称和时长列表
     List<String>title= new ArrayList<>();
     List<Integer>Time= new ArrayList<>();
     List<String>time=new ArrayList<String>();
     List<Integer>todoid= new ArrayList<>();
+    List<Integer>status=new ArrayList<>();
     boolean flag=false;
     //将数据封装成数据源
     List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-
+    private int setid;
     public void init1()
     {
         title.add("背英语");
         time.add("40分钟");
     }
 
-    public void init()
+    public void init()throws JSONException
     {
+        JSONObject param=new JSONObject();
+
+        param.put("userTodoSetId",setid);
+        String json=param.toString();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
-                .get()
-                .url(Data1.url+"/userTodo/listByUserId")
+                .post(body)
+                .url(Data1.url+"/userTodo/listById")
                 .addHeader("id",Data1.ID)
                 .addHeader("token",Data1.Token)
                 .build();
@@ -88,11 +97,25 @@ public class showActivity extends AppCompatActivity implements MyAdapter.InnerIt
                         title.add(value.getString("name"));
                         System.out.print("name======="+value.getString("name")+"\n");
                         Time.add(value.optInt("time"));
-                        time.add(value.getString("time"));
+                        Time.add(value.optInt("time"));
+                        int t=value.optInt("time");
+                        time.add(String.valueOf(t));
                         todoid.add(value.optInt("userTodoId"));
-                        //   status[i]=value.getString("status");
+                        status.add(value.optInt("todoStatusId"));
                     }
-                    flag=true;
+                    for(int i=0;i<title.size();i++){
+                        Map<String, Object> map = new HashMap<String, Object>();
+                        map.put("title", title.get(i));
+                        map.put("time", time.get(i)+"分钟");
+                        map.put("begin", "开始");
+                        System.out.println("???????"+status.get(i)+"\n");
+                        map.put("status",status.get(i));
+                        map.put("id",todoid.get(i));
+                        list.add(map);
+                    }
+                    message.what = 0x11;
+                    handler.sendMessage(message);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -106,12 +129,17 @@ public class showActivity extends AppCompatActivity implements MyAdapter.InnerIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show);
         toolbar = findViewById(R.id.toolbar);
+
+        setid=getIntent().getIntExtra("todosetid",1);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);//添加默认的返回图标
         getSupportActionBar().setHomeButtonEnabled(true); //设置返回键可用
-      //  init();
-        init1();
-     //   while(!flag);
+        try {
+            init();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         Intent intent = getIntent();
         String Message = intent.getStringExtra("Message");
         getSupportActionBar().setTitle(Message);
@@ -119,18 +147,22 @@ public class showActivity extends AppCompatActivity implements MyAdapter.InnerIt
         initView();
         adapter = new MyAdapter(list, this);
         listview.setAdapter(adapter);
-        for(int i=0;i<title.size();i++){
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("title", title.get(i));
-            map.put("time", time.get(i)+"分钟");
-            map.put("begin", "开始");
-            list.add(map);
-        }
+
         adapter.notifyDataSetChanged();
         adapter.setOnInnerItemOnClickListener(this);
         listview.setOnItemLongClickListener(this);
     }
 
+    private Handler handler= new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 0x11) {
+                //更新ui
+                adapter.notifyDataSetChanged();
+            }
+        }
+    };
     public void dialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(showActivity.this);
@@ -168,6 +200,7 @@ public class showActivity extends AppCompatActivity implements MyAdapter.InnerIt
                     map.put("title", name);
                     map.put("time", time+"分钟");
                     map.put("begin", "开始");
+                    map.put("status","1");
                     list.add(map);
                     try {
                         Create(time,name);
@@ -260,12 +293,22 @@ public class showActivity extends AppCompatActivity implements MyAdapter.InnerIt
         } );
     }
 
-    public void Create (final String tim, String name)throws JSONException
+    public void Create (final String tim, final String name)throws JSONException
     {
+        int t=0;
+        for(int i=0;i<tim.length();i++) {
+            char o=tim.charAt(i);
+            if(o>='0'&&o<='9') {
+                t=t*10;
+                t=t+(o-'0');
+            }
+            else break;;
+        }
+        Time.add(t);
         JSONObject param=new JSONObject();
 
-        param.put("userTodoSetId",0);
-        param.put("time",tim);
+        param.put("userTodoSetId",setid);
+        param.put("time",t);
         param.put("name",name);
         String json=param.toString();
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -277,6 +320,7 @@ public class showActivity extends AppCompatActivity implements MyAdapter.InnerIt
                 .addHeader("token",Data1.Token)
                 .post(body )
                 .build();
+        final int finalT = t;
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -286,24 +330,19 @@ public class showActivity extends AppCompatActivity implements MyAdapter.InnerIt
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String  rtn= response.body().string();
-                System.out.print("delete============"+rtn+"\n");
+                System.out.print("create============"+rtn+"\n");
+                status.add(1);
+                title.add(name);
+                time.add(tim);
+                JSONObject value= null;
                 try {
-                    JSONArray jsonArray = new JSONArray(rtn);
-                    int size=jsonArray.length();
-                    for (int i = 0; i < size; i++) {
-                        JSONObject value = jsonArray.getJSONObject(i);
-                        //获取到title值
-                        System.out.print("name======="+value.getString("name")+"\n");
-                        title.add(value.getString("name"));
-                        todoid.add(value.optInt("userTodoId"));
-                        time.add(value.getString("time"));
-                        Time.add(value.optInt("time"));
-                        //   status[i]=value.getString("status");
-                    }
-                    flag=true;
+                    value = new JSONObject(rtn);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                todoid.add(value.optInt("userTodoId"));
+
+
             }
 
         } );

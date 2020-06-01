@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,30 +26,45 @@ import com.example.hp.myapplication.alldata.AppInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 public class AppActivity extends AppCompatActivity{
 
 
-    private ListView mlistview;
-    private List<AppInfo> applicationInfoList;
-    private MyAdapter myAdapter;
-    private PackageManager pm;
-
+    private static ListView mlistview;
+    private static List<AppInfo> applicationInfoList;
+    private static MyAdapter myAdapter;
+    private static PackageManager pm;
+    private static boolean flag=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app);
         mlistview=findViewById(R.id.lv_app_list);
-        getAllAppNames();
+        if(flag)getAllAppNames();
         myAdapter=new MyAdapter(applicationInfoList);
         mlistview.setAdapter(myAdapter);
         myAdapter.notifyDataSetChanged();
-        mlistview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        Button button=findViewById(R.id.button3);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                doStartApplicationWithPackageName(applicationInfoList.get(position).getPackageName());
+            public void onClick(View view) {
+                flag=false;
+                Toast.makeText(AppActivity.this,
+                        "继续", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(AppActivity.this, LockActivity.class);
+                startActivity(intent);
+                //        mHandler.removeCallbacksAndMessages(null);
             }
         });
+
+//        mlistview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                doStartApplicationWithPackageName(applicationInfoList.get(position).getPackageName());
+//            }
+//        });
         //listView长按事件
         mlistview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
@@ -115,7 +131,7 @@ public class AppActivity extends AppCompatActivity{
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             View view=null;
             if(convertView==null){
                 view=LayoutInflater.from(AppActivity.this).inflate(R.layout.mlistview_layout,null);
@@ -128,6 +144,14 @@ public class AppActivity extends AppCompatActivity{
             tv_appname.setText(list.get(position).getName());
             tv_packagename.setText(list.get(position).getPackageName());
             img.setImageDrawable(list.get(position).getIcon());
+            ImageView inter=view.findViewById(R.id.inter);
+            inter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    doStartApplicationWithPackageName(applicationInfoList.get(position).getPackageName());
+                }
+            });
+
             return view;
         }
     }

@@ -44,7 +44,7 @@ public class ButtonActivity extends AppCompatActivity {
         mFragments = new ArrayList<>();
         mFragments.add(new Todofragment());
         mFragments.add(new Todosfragment());
-        mFragments.add(Timefragment.newInstance(id,token));
+        mFragments.add(new Timefragment());
         mFragments.add(new Personfragment());
         setFragmentPosition(0);
     }

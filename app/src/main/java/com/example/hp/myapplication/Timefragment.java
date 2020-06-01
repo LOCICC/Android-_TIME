@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +16,13 @@ import android.widget.Toast;
 
 import com.example.hp.myapplication.alldata.Data1;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -28,23 +34,33 @@ import okhttp3.Response;
 @SuppressLint("ValidFragment")
 public class Timefragment extends Fragment
 {
+    Message message = Message.obtain();
     private String[] Data={"学习","打扫"};//相应的待办
-    private String ID;
-    private String Token;
-    private String successCount=null;
+
     private String acctime=null;
-    private String dailytime;
+    private String daytime=null;
+    private String monthtime=null;
     private AlertDialog alertDialog1;
     @SuppressLint("ValidFragment")
-    public static Timefragment newInstance(String id,String token)
-    {
-        Timefragment newFragment=new Timefragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("ID", id);
-        bundle.putString("Token", token);
-        newFragment.setArguments(bundle);
-        return newFragment;
-    }
+    private TextView ac;
+    private TextView day;
+    private TextView month;
+
+    private Handler handler= new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 1) {
+                ac.setText(acctime);
+            }
+            else if(msg.what== 2) {
+                day.setText(daytime);
+            }
+            else if(msg.what==3) {
+                month.setText(monthtime);
+            }
+        }
+    };
 
     public void init()
     {
@@ -65,25 +81,101 @@ public class Timefragment extends Fragment
             public void onResponse(Call call, Response response) throws IOException {
                 String  rtn= response.body().string();
                 System.out.print("time========="+rtn+"\n");
-                JSONObject json = null;
-//                try {
-//                    successCount= json.getString("successCount");
-//                    acctime= json.getString("acctime");
-//                    dailytime=json.getString("dailytime");
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    JSONObject json = new JSONObject(rtn);
+                    int s=json.optInt("successCount");
+                    acctime=String.valueOf(s);
+                    message.what = 1;
+                    handler.sendMessage(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
         } );
     }
 
+    public void init1()
+    {
+        SimpleDateFormat dff = new SimpleDateFormat("yyyy-MM-dd");
+        dff.setTimeZone(TimeZone.getTimeZone("GMT+08"));
+        String ee = dff.format(new Date());
+        System.out.println("date----------"+ee);
+        OkHttpClient client = new OkHttpClient();
 
+        String uu=Data1.url+"/record/getDailyRecord?date="+ee;
+        Request request = new Request.Builder()
+                .get()
+                .url(uu)
+                .addHeader("id",Data1.ID)
+                .addHeader("token",Data1.Token)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String err = e.getMessage().toString();
+            }
+            //请求成功执行的方法
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String  rtn= response.body().string();
+                System.out.print("time========="+rtn+"\n");
+                try {
+                    JSONObject json = new JSONObject(rtn);
+                    int s=json.optInt("successCount");
+                    acctime=String.valueOf(s);
+                    message.what = 2;
+                    handler.sendMessage(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } );
+    }
+    public void init2()
+    {
+        SimpleDateFormat dff = new SimpleDateFormat("yyyy-MM-dd");
+        dff.setTimeZone(TimeZone.getTimeZone("GMT+08"));
+        String ee = dff.format(new Date());
+        System.out.println("moth----------"+ee);
+        OkHttpClient client = new OkHttpClient();
+
+        String uu=Data1.url+"/record/getMonthRecord?date="+ee;
+        Request request = new Request.Builder()
+                .get()
+                .url(uu)
+                .addHeader("id",Data1.ID)
+                .addHeader("token",Data1.Token)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String err = e.getMessage().toString();
+            }
+            //请求成功执行的方法
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String  rtn= response.body().string();
+                System.out.print("time========="+rtn+"\n");
+                try {
+                    JSONObject json = new JSONObject(rtn);
+                    int s=json.optInt("successCount");
+                    acctime=String.valueOf(s);
+                    message.what = 3;
+                    handler.sendMessage(message);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } );
+    }
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    //    init();
-
+        init();
+        init1();
+        init2();
     }
 
     public void showSingleAlertDialog(View view){
@@ -93,8 +185,8 @@ public class Timefragment extends Fragment
         alertBuilder.setTitle("快速锁屏请选择时长");
         final Intent intent = new Intent(getActivity(), LockActivity.class);
         intent.putExtra("timelong", 5);
-        intent.putExtra("id",ID);
-        intent.putExtra("token",Token);
+        intent.putExtra("id",Data1.ID);
+        intent.putExtra("token",Data1.Token);
         alertBuilder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -146,9 +238,13 @@ public class Timefragment extends Fragment
                 showSingleAlertDialog(view);
             }
         });
-     //   while(successCount==null){}
-        TextView t8=messageLayout.findViewById(R.id.textView8);
-        t8.setText("2");
+        ac=messageLayout.findViewById(R.id.textView8);
+        day=messageLayout.findViewById(R.id.textView6);
+        month=messageLayout.findViewById(R.id.textView16);
+        ac.setText(acctime);
+        day.setText(daytime);
+        month.setText(monthtime);
+
         return  messageLayout;
     }
 
