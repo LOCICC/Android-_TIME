@@ -9,15 +9,15 @@
         android:background="@drawable/linearlayout">
 
         <TextView
-            android:id="@+id/dialog_title"
+            android:id="@id/dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="团队"
+            android:text="添加代办"
             android:textSize="24sp"
             android:layout_margin="20dp" />
 
         <ImageButton
-            android:id="@+id/dialog_btn_close"
+            android:id="@id/dialog_btn_close"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
@@ -27,32 +27,8 @@
             style="?android:attr/borderlessButtonStyle"/>
     </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="20dp">
-
-        <TextView
-            android:id="@+id/dialog_selection_create_team"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/textview"
-            android:text="    创建团队    "
-            android:textSize="20sp"
-            android:gravity="center" />
-        <TextView
-            android:id="@+id/dialog_selection_join_team"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/textview2"
-            android:text="    加入团队    "
-            android:textSize="20sp"
-            android:gravity="center" />
-    </LinearLayout>
     <EditText
-        android:id="@+id/dialog_edit_team"
+        android:id="@+id/dialog_edit_team_todo_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="6dp"
@@ -60,8 +36,39 @@
         android:singleLine="true"
         android:maxLength="30"
         android:textSize="20sp"
-        android:hint="请输入团队名称"
-        android:background="@drawable/edittext" />
+        android:hint="请输入待办事项"
+        android:background="@drawable/edittext"/>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="时长"
+            android:layout_gravity="center"
+            android:textSize="20dp"
+            android:layout_marginLeft="25dp"/>
+        <EditText
+            android:id="@+id/dialog_edit_team_todo_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:ems="4"
+            android:inputType="time"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="min"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="wrap_content"

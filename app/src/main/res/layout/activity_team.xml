@@ -5,9 +5,11 @@
     android:layout_height="match_parent"
     android:background="@color/lightGray">
 
-    <com.example.hp.myapplication.layout.TitleLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"/>
 
     <fragment
         android:id="@+id/fragment_team"

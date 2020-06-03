@@ -43,20 +43,26 @@ public class MyAdapter extends BaseAdapter implements OnClickListener {
         ViewHolder mHolder;
         if (convertView == null) {
             mHolder = new ViewHolder();
-            if(list.get(position).get("status").toString().equals("1"))convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item,
-                    null);
-            else if(list.get(position).get("status").toString().equals("3")){
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item1,
-                        null);
-            }
-            else {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item2,
-                        null);
-            }
         }
         else {
             convertView = convertView;
             mHolder = (ViewHolder) convertView.getTag();  //重新获得ViewHolder
+        }
+
+        if(list.get(position).get("status").toString().equals("1")){
+            System.out.println("you_____-----------"+list.get(position).get("status").toString()+"----"+list.get(position).get("title").toString());
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item,
+                    null);
+        }
+        else if(list.get(position).get("status").toString().equals("3")){
+            System.out.println("you_____-----------"+list.get(position).get("status").toString()+"----"+list.get(position).get("title").toString());
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item1,
+                    null);
+        }
+        else {
+            System.out.println("you_____-----------"+list.get(position).get("status").toString()+"----"+list.get(position).get("title").toString());
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item2,
+                    null);
         }
         mHolder = new ViewHolder();
         mHolder.card_title = (TextView) convertView.findViewById(R.id.cardTitle);

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/add_todo_item"
+        android:title="添加待办"></item>
+    <item android:id="@+id/add_todolist_item"
+        android:title="添加待办集"></item>
+    <item android:id="@+id/invite_item"
+        android:title="邀请成员"></item>
+    <item android:id="@+id/out_item"
+        android:title="踢出成员"></item>
+    <item android:id="@+id/quit_item"
+        android:title="退出团队"></item>
+    <item android:id="@+id/break_item"
+        android:title="解散团队"></item>
+</menu>

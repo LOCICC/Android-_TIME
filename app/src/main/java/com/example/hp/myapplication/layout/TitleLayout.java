@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.hp.myapplication.R;
+import com.example.hp.myapplication.TeamsListActivity;
 
 public class TitleLayout extends LinearLayout {
     public TitleLayout (final Context context, AttributeSet attrs) {
@@ -26,7 +27,8 @@ public class TitleLayout extends LinearLayout {
             btn_create.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showDialog();
+                    TeamsListActivity teamsListActivity = (TeamsListActivity) getContext();
+                    teamsListActivity.showDialog();
                 }
             });
         }
@@ -39,61 +41,6 @@ public class TitleLayout extends LinearLayout {
         });
     }
 
-    private void showDialog() {
 
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_create_team, null);
-        final AlertDialog dialog = new AlertDialog.Builder(getContext()).setView(view).create();
 
-        ImageButton btn_close = view.findViewById(R.id.dialog_btn_close);
-        final TextView create = view.findViewById(R.id.dialog_selection_create_team);
-        final TextView join = view.findViewById(R.id.dialog_selection_join_team);
-        Button btn_confirm =  view.findViewById(R.id.dialog_btn_confirm);
-        Button btn_cancel = view.findViewById(R.id.dialog_btn_cancel);
-
-        create.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                create.setBackgroundResource(R.drawable.textview);
-                join.setBackgroundResource(R.drawable.textview2);
-                create.setClickable(false);
-                join.setClickable(true);
-            }
-        });
-        create.setClickable(false);
-        join.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                create.setBackgroundResource(R.drawable.textview2);
-                join.setBackgroundResource(R.drawable.textview);
-                create.setClickable(true);
-                join.setClickable(false);
-            }
-        });
-
-        btn_close.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        btn_confirm.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //to do
-                dialog.dismiss();
-            }
-        });
-
-        btn_cancel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //to do
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-        dialog.setCancelable(false);
-    }
 }

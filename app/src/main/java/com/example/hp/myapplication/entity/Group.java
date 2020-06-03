@@ -3,8 +3,7 @@ package com.example.hp.myapplication.entity;
 
 public class Group {
     private String gName;
-
-
+    private int todoSetId;
 
     public Group() {
     }
@@ -19,5 +18,13 @@ public class Group {
 
     public void setgName(String gName) {
         this.gName = gName;
+    }
+
+    public int getTodoSetId() {
+        return todoSetId;
+    }
+
+    public void setTodoSetId(int todoSetId) {
+        this.todoSetId = todoSetId;
     }
 }

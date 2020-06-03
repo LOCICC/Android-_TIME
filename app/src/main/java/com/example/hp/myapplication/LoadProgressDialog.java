@@ -23,30 +23,30 @@ public class LoadProgressDialog extends Dialog {
         this.canCancel = canCancel;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-        handler.sendEmptyMessage(0);
-    }
+//    public void setMessage(String message) {
+//        this.message = message;
+//        handler.sendEmptyMessage(0);
+//    }
 
-    @SuppressLint("HandlerLeak")
-    private
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == 0) {
-                textView.setText(message);
-            }
-        }
-    };
+//    @SuppressLint("HandlerLeak")
+//    private
+//    Handler handler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            if (msg.what == 0) {
+//                textView.setText(message);
+//            }
+//        }
+//    };
 
     @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_loadprogress);
-        textView = findViewById(R.id.tv_message);
+ //       textView = findViewById(R.id.tv_message);
 //        setCancelable(canCancel);
         setCanceledOnTouchOutside(canCancel);
-        textView.setText(message);
+ //       textView.setText(message);
     }
 }

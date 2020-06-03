@@ -45,6 +45,7 @@ public class LockActivity extends AppCompatActivity {
     private String usertodoid;
     private static int sum;
     private static int all;
+    private static int setid;
     private int mProgressSecond = 0;
     private int mProgressHour=0;
     private int minute=0;
@@ -81,6 +82,72 @@ public class LockActivity extends AppCompatActivity {
 
         } );
     }
+
+    public void inform1 ()throws JSONException
+    {
+        JSONObject param=new JSONObject();
+        System.out.println("usertodoid==============="+usertodoid+"\n");
+        param.put("userTodoId",usertodoid);
+        param.put("statusId",2);
+        param.put("flag",0);
+        param.put("time",sum);
+        String json=param.toString();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .post(body )
+                .url(Data1.url+"/record/setRecord")
+                .addHeader("id",Data1.ID)
+                .addHeader("token",Data1.Token)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String err = e.getMessage().toString();
+            }
+            //请求成功执行的方法
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String  rtn= response.body().string();
+                System.out.print("lock数据---------"+rtn+"\n");
+            }
+
+        } );
+    }
+    public void inform2 ()throws JSONException
+    {
+        JSONObject param=new JSONObject();
+        System.out.println("usertodoid==============="+usertodoid+"\n");
+        param.put("userTodoId",usertodoid);
+        param.put("userTodoSetId",setid);
+        param.put("statusId",2);
+        param.put("flag",1);
+        param.put("time",sum);
+        String json=param.toString();
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .post(body )
+                .url(Data1.url+"/record/setRecord")
+                .addHeader("id",Data1.ID)
+                .addHeader("token",Data1.Token)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String err = e.getMessage().toString();
+            }
+            //请求成功执行的方法
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String  rtn= response.body().string();
+                System.out.print("lock数据---------"+rtn+"\n");
+            }
+
+        } );
+    }
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
 
@@ -91,7 +158,8 @@ public class LockActivity extends AppCompatActivity {
                     if (all < 0) {
                         // TODO 倒计时结束
                         try {
-                            inform(2);
+                            if(setid==0)inform1();
+                            else inform2();
                             flag=true;
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -152,6 +220,7 @@ public class LockActivity extends AppCompatActivity {
             f=false;
                 all = getIntent().getIntExtra("timelong", 5);
                 usertodoid = getIntent().getStringExtra("usertodoid");
+                setid=getIntent().getIntExtra("usertodoid",0);
                 System.out.print(all);
                 all = all * 60;
                 sum = all;
@@ -165,11 +234,6 @@ public class LockActivity extends AppCompatActivity {
         tClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                try {
-//                    inform(3);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
                 Toast.makeText(LockActivity.this,
                         "锁屏终止", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LockActivity.this, AppActivity.class);
@@ -183,7 +247,7 @@ public class LockActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    inform(3);
+                    inform1();
                     f=true;
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -272,23 +336,7 @@ public class LockActivity extends AppCompatActivity {
         }
 
     }
-    //一下两个方法并非必须 只是在查找过程中 看到的以重解决方案 可以尝试注释之
-//    @Override
-//    public void onWindowFocusChanged(boolean hasFocus) {
-//        disableStatusBar();
-//        super.onWindowFocusChanged(hasFocus);
-//    }
-//
-//    public void disableStatusBar() {
-//        try {
-//            Object service = getSystemService("statusbar");
-//            Class<?> claz = Class.forName("android.app.StatusBarManager");
-//            Method expand = claz.getMethod("collapsePanels");
-//            expand.invoke(service);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+
 
     //禁止下拉
     private void prohibitDropDown() {

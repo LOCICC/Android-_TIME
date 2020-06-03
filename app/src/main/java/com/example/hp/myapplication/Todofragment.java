@@ -171,7 +171,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
         m=this;
         loadProgressDialog=new LoadProgressDialog(getActivity(),"加载中……");
         loadProgressDialog.show();
-        loadProgressDialog.setMessage("加载数据中……");
+       // loadProgressDialog.setMessage("加载数据中……");
         listview = messageLayout.findViewById(R.id.listView);
         toolbar = messageLayout.findViewById(R.id.toolbar);
         adapter = new MyAdapter(list,getContext());
@@ -285,7 +285,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
             Toast.makeText(getActivity(), "开始计时" , Toast.LENGTH_SHORT).show();
             String tim=list.get(position).get("time").toString();
             int time=0;
-            String todo=list.get(position).get("id").toString();
+            String todo=todoid.get(position).toString();
             for(int i=0;i<tim.length();i++) {
                 char o=tim.charAt(i);
                 if(o>='0'&&o<='9') {
@@ -356,7 +356,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
         Time.add(t);
         JSONObject param=new JSONObject();
 
-        param.put("userTodoSetId","1");
+        param.put("userTodoSetId","0");
         param.put("time",t);
         param.put("name",name);
         String json=param.toString();

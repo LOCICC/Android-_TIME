@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/chart_border"
+    android:padding="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="350dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/Chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:layout_alignParentLeft="true"
+        android:textSize="20dp"
+        android:textColor="#000000"
+        android:text="月度数据分布  "/>
+
+
+    <TextView
+        android:id="@+id/month"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:layout_toRightOf="@id/Chart"
+        android:textSize="20dp"
+        android:textColor="#000000" />
+
+    <ImageView
+        android:id="@+id/before"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_toLeftOf="@id/next"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="7dp"
+        android:src="@drawable/before" />
+
+    <ImageView
+        android:id="@+id/next"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="6dp"
+        android:src="@drawable/next" />
+
+
+    <lecho.lib.hellocharts.view.LineChartView
+        android:id="@+id/line_chart"
+        android:layout_width="347dp"
+        android:layout_height="255dp"
+        android:layout_alignParentBottom="true"
+        android:background="#ffffff"
+        tools:layout_editor_absoluteX="20dp" />
+
+</RelativeLayout>
