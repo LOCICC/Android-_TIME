@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+
 public class LoadProgressDialog extends Dialog {
     private String message;
     private boolean canCancel;
@@ -43,6 +45,7 @@ public class LoadProgressDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fresco.initialize(getContext());
         setContentView(R.layout.dialog_loadprogress);
  //       textView = findViewById(R.id.tv_message);
 //        setCancelable(canCancel);

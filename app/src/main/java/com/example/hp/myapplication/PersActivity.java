@@ -107,7 +107,7 @@ public class PersActivity extends AppCompatActivity {
 
         String p3=oldpassword.getText().toString();
 
-        ad1.setTitle("增加联系人:");
+        ad1.setTitle("修改密码:");
         ad1.setIcon(R.drawable.edit);
         ad1.setView(textEntryView);
         ad1.setPositiveButton("是", new DialogInterface.OnClickListener() {
@@ -174,7 +174,6 @@ public class PersActivity extends AppCompatActivity {
         edit1 = findViewById(R.id.textView11);
         button1 = findViewById(R.id.image11);
         edit2 = findViewById(R.id.textView22);
-        button2 = findViewById(R.id.image12);
         edit3 = findViewById(R.id.textView33);
         edit4 = findViewById(R.id.textView44);
         button4 = findViewById(R.id.image14);

@@ -347,7 +347,7 @@ public class Timefragment extends Fragment
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         int code = response.code();
-                        String responseData=response.body().toString();
+                        String responseData=response.body().string();
                         Log.i("okHttp的请求结果：" , responseData);
                             if(responseData!= null) {
                                 try{
@@ -356,6 +356,7 @@ public class Timefragment extends Fragment
                                         String a = String.valueOf(i+1);
                                         int time = jsonobj.getInt(a);
                                         date[i] = time;
+                                        System.out.println(a+"-----"+date[i]+"\n");
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();

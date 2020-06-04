@@ -42,7 +42,7 @@ public class LockActivity extends AppCompatActivity {
 
 
     private ProgressRing mProgressRing;
-    private String usertodoid;
+    private static String usertodoid;
     private static int sum;
     private static int all;
     private static int setid;
@@ -56,7 +56,7 @@ public class LockActivity extends AppCompatActivity {
     {
         JSONObject param=new JSONObject();
         System.out.println("usertodoid==============="+usertodoid+"\n");
-        param.put("userTodoId",usertodoid);
+        param.put("todoId",usertodoid);
         param.put("todoStatusId",s);
         String json=param.toString();
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -87,7 +87,7 @@ public class LockActivity extends AppCompatActivity {
     {
         JSONObject param=new JSONObject();
         System.out.println("usertodoid==============="+usertodoid+"\n");
-        param.put("userTodoId",usertodoid);
+        param.put("todoId",usertodoid);
         param.put("statusId",2);
         param.put("flag",0);
         param.put("time",sum);
@@ -119,7 +119,7 @@ public class LockActivity extends AppCompatActivity {
     {
         JSONObject param=new JSONObject();
         System.out.println("usertodoid==============="+usertodoid+"\n");
-        param.put("userTodoId",usertodoid);
+        param.put("todoId",usertodoid);
         param.put("userTodoSetId",setid);
         param.put("statusId",2);
         param.put("flag",1);
@@ -161,6 +161,7 @@ public class LockActivity extends AppCompatActivity {
                             if(setid==0)inform1();
                             else inform2();
                             flag=true;
+                            f=true;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -220,7 +221,7 @@ public class LockActivity extends AppCompatActivity {
             f=false;
                 all = getIntent().getIntExtra("timelong", 5);
                 usertodoid = getIntent().getStringExtra("usertodoid");
-                setid=getIntent().getIntExtra("usertodoid",0);
+                setid=getIntent().getIntExtra("usertodosetid",0);
                 System.out.print(all);
                 all = all * 60;
                 sum = all;
@@ -235,7 +236,7 @@ public class LockActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(LockActivity.this,
-                        "锁屏终止", Toast.LENGTH_SHORT).show();
+                        "打开白名单", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LockActivity.this, AppActivity.class);
                 startActivity(intent);
                LockActivity.this.finish();
@@ -243,12 +244,13 @@ public class LockActivity extends AppCompatActivity {
         });
 
         Button tClick1 = findViewById(R.id.button4);
-        tClick.setOnClickListener(new View.OnClickListener() {
+        tClick1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
                     inform1();
                     f=true;
+                    flag=true;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

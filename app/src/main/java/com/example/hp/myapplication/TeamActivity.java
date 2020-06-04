@@ -620,6 +620,7 @@ public class TeamActivity extends AppCompatActivity {
                                     progressDialog.dismiss();
                                     if (body.string().equals("create-success")) {
                                         Log.d(TAG, "创建成功");
+                                        getTodoList();
                                     }
                                     else {
                                         Log.d(TAG, "创建失败");
@@ -692,6 +693,7 @@ public class TeamActivity extends AppCompatActivity {
                                     progressDialog.dismiss();
                                     if (message.equals("create-success")) {
                                         Log.d(TAG, "创建成功");
+                                        getTodoSetList();
                                     }
                                     else {
                                         Log.d(TAG, "创建失败");

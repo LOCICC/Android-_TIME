@@ -212,6 +212,7 @@ public class TeamsListActivity extends AppCompatActivity {
 //                Selection team = new Selection(teamName);
 //                selectionList.add(team);
 
+
                 MediaType JSON = MediaType.parse("application/json;charse=utf-8");
                 OkHttpClient client = new OkHttpClient.Builder()
                         .connectTimeout(10000, TimeUnit.MILLISECONDS)
@@ -275,7 +276,7 @@ public class TeamsListActivity extends AppCompatActivity {
 //                                if (parseJsonWithJsonObject(response)) {
 //                                    initView();
 //                                }
-
+                                getTeamList();
                             }
                         }
                     }

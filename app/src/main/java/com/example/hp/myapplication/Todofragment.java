@@ -165,6 +165,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
         }
     };
 
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         messageLayout=inflater.inflate(R.layout.todo,container,false);
         flag=false;
@@ -236,6 +237,7 @@ public class Todofragment extends Fragment implements MyAdapter.InnerItemOnclick
                     }
                     Toast.makeText(getActivity(), "添加待办成功！", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
+                    adapter.notifyDataSetChanged();
                 }
             }
 

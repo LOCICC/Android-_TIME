@@ -255,6 +255,24 @@ public class showActivity extends AppCompatActivity implements MyAdapter.InnerIt
         switch (v.getId()) {
             case R.id.cardBegin:
                 Toast.makeText(showActivity.this, "开始计时" , Toast.LENGTH_SHORT).show();
+                String tim=list.get(position).get("time").toString();
+                int time=0;
+                String todo=todoid.get(position).toString();
+                for(int i=0;i<tim.length();i++) {
+                    char o=tim.charAt(i);
+                    if(o>='0'&&o<='9') {
+                        time=time*10;
+                        time=time+(o-'0');
+                    }
+                    else break;;
+                }
+                System.out.print("============"+time);
+                final Intent intent = new Intent(showActivity.this, LockActivity.class);
+                intent.putExtra("timelong", time);
+                intent.putExtra("usertodoid",todo);
+                intent.putExtra("usertodosetid",setid);
+                startActivity(intent);
+                showActivity.this.finish();
                 break;
             default:
                 break;
